@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  createStaticNavigation,
-  StaticParamList,
-} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ThemeProvider from '@styles/theme-provider';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import TabBar from '@components/common/tab-bar';
 import Splash from '@screens/splash';
 import Home from '@screens/home';
 import Categories from '@screens/category/categories';
@@ -32,9 +24,11 @@ import AddressList from '@screens/address/address-list';
 import RegionSelect from '@screens/region-select';
 
 import '@styles/global.css';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-export type RootStackParamList = StaticParamList<typeof RootStack>;
+import {GestureHandlerRootView } from 'react-native-gesture-handler'
+
+import { Slot } from 'expo-router'
+
 
 const queryClient = new QueryClient();
 
@@ -45,10 +39,8 @@ export default function App() {
         <CartProvider>
           <CustomerProvider>
             <QueryClientProvider client={queryClient}>
-              <GestureHandlerRootView>
-                <SafeAreaProvider>
-                  <Navigation />
-                </SafeAreaProvider>
+              <GestureHandlerRootView style={{flex:1}}>
+                <Slot/>
               </GestureHandlerRootView>
             </QueryClientProvider>
           </CustomerProvider>
@@ -58,53 +50,4 @@ export default function App() {
   );
 }
 
-const HomeTabs = createBottomTabNavigator({
-  tabBar: props => <TabBar {...props} />,
-  screens: {
-    Home: Home,
-    Categories: Categories,
-    Collections: Collections,
-    Profile: Profile,
-  },
-  screenOptions: {
-    headerShown: false,
-  },
-});
 
-const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Splash',
-  groups: {
-    App: {
-      screenOptions: {
-        headerShown: false,
-      },
-      screens: {
-        Main: HomeTabs,
-        Splash,
-        ProductDetail,
-        CategoryDetail,
-        CollectionDetail,
-        Cart,
-        Checkout,
-        SignIn,
-        Register,
-        Orders,
-        OrderDetail,
-        ProfileDetail,
-        AddressList,
-        AddressForm,
-      },
-    },
-    Modal: {
-      screenOptions: {
-        presentation: 'modal',
-        headerShown: false,
-      },
-      screens: {
-        RegionSelect: RegionSelect,
-      },
-    },
-  },
-});
-
-const Navigation = createStaticNavigation(RootStack);

@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useState, useEffect} from 'react';
 import {HttpTypes} from '@medusajs/types';
 import apiClient from '@api/client';
 import {useCart} from './cart-context';
@@ -50,12 +50,12 @@ export const CustomerProvider = ({children}: CustomerProviderProps) => {
         email,
         password,
       });
-
+      
       // Check if the response is a string
       if (typeof response === 'string') {
         await Promise.all([refreshCustomer(), linkCartToCustomer()]);
       } else {
-        // Handle third party auth
+         // Handle third party auth
         console.log('Third party auth', response);
       }
     } catch (error) {
@@ -80,14 +80,14 @@ export const CustomerProvider = ({children}: CustomerProviderProps) => {
     lastName: string,
   ) => {
     try {
-      const token = await apiClient.auth.register('customer', 'emailpass', {
+      await apiClient.auth.register('customer', 'emailpass', {
         email,
         password,
       });
 
-      await apiClient.client.setToken(token);
-
-      await apiClient.store.customer.create({
+        
+       await apiClient.store.customer.create({
+        
         first_name: firstName,
         last_name: lastName,
         email,

@@ -1,4 +1,3 @@
-import React from 'react';
 import Text from '@components/common/text';
 import {VariantPrice} from 'types/global';
 

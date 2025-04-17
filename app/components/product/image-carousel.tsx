@@ -1,10 +1,9 @@
-import {HttpTypes} from '@medusajs/types';
 import {formatImageUrl} from '@utils/image-url';
 import {cssInterop} from 'nativewind';
 import React from 'react';
 import {Dimensions, Image, View} from 'react-native';
 import {useSharedValue} from 'react-native-reanimated';
-import Carousel, {
+import type {
   ICarouselInstance,
   Pagination,
 } from 'react-native-reanimated-carousel';
@@ -13,7 +12,7 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 type CarouselProps = {
-  data: HttpTypes.StoreProductImage[];
+  data: {url: string}[];
 };
 
 const PagiationTw = cssInterop(Pagination.Basic, {
@@ -46,7 +45,7 @@ const ImageCarousel = ({data}: CarouselProps) => {
         loop={false}
         onProgressChange={progress}
         renderItem={({index}) => {
-          const uri = formatImageUrl(data[index].url);
+          const uri = formatImageUrl(data[index]?.url);
           return (
             <Image
               source={{uri}}

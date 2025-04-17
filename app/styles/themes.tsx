@@ -1,4 +1,3 @@
-// import {vars} from 'nativewind';
 import {applyThemes} from '@styles/utils';
 
 export const themeColorSets = {

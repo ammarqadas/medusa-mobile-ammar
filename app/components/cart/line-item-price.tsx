@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import {convertToLocale} from '@utils/product-price';
 import {HttpTypes} from '@medusajs/types';
 
@@ -26,25 +26,25 @@ const LineItemUnitPrice = ({
     <View className="flex flex-col justify-center h-full">
       {hasReducedPrice && (
         <>
-          <Text className="text-content">
+          <View className="text-content">
             {style === 'default' && (
-              <Text className="text-content">Original: </Text>
+              <View className="text-content">Original: </View>
             )}
-            <Text
+            <View
               className="line-through text-content"
               testID="product-unit-original-price">
               {convertToLocale({
                 amount: original_total / item.quantity,
                 currency_code: currencyCode,
               })}
-            </Text>
-          </Text>
+            </View>
+          </View>
           {style === 'default' && (
-            <Text className="text-primary">-{percentage_diff}%</Text>
+            <View className="text-primary">-{percentage_diff}%</View>
           )}
         </>
       )}
-      <Text
+      <View
         className={`text-base ${
           hasReducedPrice ? 'text-primary' : 'text-content'
         }`}>
@@ -52,7 +52,7 @@ const LineItemUnitPrice = ({
           amount: unit_price * item.quantity,
           currency_code: currencyCode,
         })}
-      </Text>
+      </View>
     </View>
   );
 };

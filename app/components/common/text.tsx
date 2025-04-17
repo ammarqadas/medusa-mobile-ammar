@@ -1,5 +1,5 @@
-import React, {PropsWithChildren} from 'react';
-import {Text, TextProps} from 'react-native';
+import React from 'react';
+import {Text} from 'react-native';
 import {tv, type VariantProps} from 'tailwind-variants';
 
 const text = tv({
@@ -18,7 +18,7 @@ type CommonTextProps = VariantProps<typeof text> & {
   className?: string;
 };
 
-const CommonText = ({
+const TextComponent = ({
   type,
   className,
   children,
@@ -36,4 +36,4 @@ const CommonText = ({
   );
 };
 
-export default CommonText;
+export default TextComponent;

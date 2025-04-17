@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+
 import {View} from 'react-native';
 import Text from '@components/common/text';
 import {HttpTypes} from '@medusajs/types';
@@ -10,6 +11,7 @@ type ReviewStepProps = {
 };
 
 const ReviewStep = ({cart}: ReviewStepProps) => {
+
   // Find the selected shipping option
   const selectedShippingMethod = cart.shipping_methods?.at(-1);
 
@@ -50,5 +52,4 @@ const ReviewStep = ({cart}: ReviewStepProps) => {
     </View>
   );
 };
-
 export default ReviewStep;

@@ -1,14 +1,13 @@
 import React from 'react';
-import {Pressable, TouchableOpacity} from 'react-native';
+import {Pressable} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   withDelay,
   withTiming,
   useSharedValue,
-  SharedValue,
 } from 'react-native-reanimated';
-import Icon from '@react-native-vector-icons/ant-design';
+import Icon from 'react-native-vector-icons/ant-design';
 import {useColors} from '@styles/hooks';
 
 const OFFSET = 56; // Distance between buttons
@@ -37,7 +36,7 @@ const ActionButton = ({
   icon,
   onPress,
 }: {
-  isExpanded: SharedValue<boolean>;
+  isExpanded: Animated.SharedValue<boolean>;
   index: number;
   icon: IconName;
   onPress: () => void;
@@ -62,11 +61,11 @@ const ActionButton = ({
 
   return (
     <Animated.View className="absolute bottom-0 right-0" style={animatedStyles}>
-      <TouchableOpacity
+      <Pressable
         onPress={onPress}
         className="bg-background p-4 rounded-full justify-center items-center elevation-sm ">
         <Icon name={icon} size={24} color={colors.content} />
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 };

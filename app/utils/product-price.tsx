@@ -1,4 +1,3 @@
-import {HttpTypes} from '@medusajs/types';
 
 export const getPricesForVariant = (variant: any) => {
   if (!variant?.calculated_price?.calculated_amount) {
@@ -29,7 +28,7 @@ export function getProductPrice({
   product,
   variantId,
 }: {
-  product: HttpTypes.StoreProduct;
+  product: any;
   variantId?: string;
 }) {
   if (!product || !product.id) {
@@ -83,7 +82,7 @@ export const getPercentageDiff = (original: number, calculated: number) => {
   return decrease.toFixed();
 };
 
-type ConvertToLocaleParams = {
+export type ConvertToLocaleParams = {
   amount: number;
   currency_code: string;
   minimumFractionDigits?: number;
@@ -108,9 +107,9 @@ export const convertToLocale = ({
     : amount.toString();
 };
 
-export const isObject = (input: any) => input instanceof Object;
-export const isArray = (input: any) => Array.isArray(input);
-export const isEmpty = (input: any) => {
+const isObject = (input: any) => input instanceof Object;
+const isArray = (input: any) => Array.isArray(input);
+const isEmpty = (input: any) => {
   return (
     input === null ||
     input === undefined ||

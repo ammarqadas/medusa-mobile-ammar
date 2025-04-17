@@ -1,180 +1,87 @@
-import React, {useState, useEffect} from 'react';
-import {View, TouchableOpacity, ActivityIndicator} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, TouchableOpacity} from 'react-native';
 import Text from '@components/common/text';
-import {useColors} from '@styles/hooks';
-import {useQuery} from '@tanstack/react-query';
-import {HttpTypes} from '@medusajs/types';
-import apiClient from '@api/client';
-import {convertToLocale} from '@utils/product-price';
-import { useCart } from '@data/cart-context';
+import {Controller, UseFormReturn} from 'react-hook-form';
+import {CheckoutFormData} from '../../../../types/checkout';
+import {Region} from '@medusajs/medusa';
+import {useCustomer} from '@data/customer-context';
+import {useRegion} from '@data/region-context';
+import {formatPrice} from '@utils/product-price';
+import {ShippingOption} from '@medusajs/medusa/dist/models/shipping-option';
+import {useCart} from '@data/cart-context';
 
 type ShippingStepProps = {
-  cart: HttpTypes.StoreCart;
+  form: UseFormReturn<CheckoutFormData>;
+  isLoading: boolean;
+  onShippingSelect: (shippingOption: ShippingOption) => void;
 };
 
-const ShippingStep = ({cart}: ShippingStepProps) => {
-  const colors = useColors();
-  const [calculatedPricesMap, setCalculatedPricesMap] = useState<
-    Record<string, number>
-  >({});
-  const {setShippingMethod} = useCart();
-  const [selectedMethodId, setSelectedMethodId] = useState(
-    cart?.shipping_methods?.[0]?.shipping_option_id || null,
-  );
-  const [updatingOptionId, setUpdatingOptionId] = useState<string | null>(null);
-  const [isCalculatingPrices, setIsCalculatingPrices] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const {data: shippingOptions, isLoading: isLoadingShippingOptions} = useQuery(
-    {
-      queryKey: ['shipping-options', cart?.id],
-      queryFn: async () => {
-        if (!cart?.id) {
-          throw new Error('No cart ID');
-        }
-        const {shipping_options} =
-          await apiClient.store.fulfillment.listCartOptions({
-            cart_id: cart.id,
-          });
-        return shipping_options;
-      },
-      enabled: !!cart?.id,
-    },
+const ShippingStep = ({
+  form,
+  isLoading,
+  onShippingSelect,
+}: ShippingStepProps) => {
+  const {watch, setValue} = form;
+  const region = useRegion();
+  const {customer} = useCustomer();
+  const {cart} = useCart();
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(
+    null,
   );
 
-  // Calculate prices for shipping options
+  const shippingAddress = watch('shipping_address');
+
   useEffect(() => {
-    if (!cart?.id || !shippingOptions?.length) {
-      return;
+    if (selectedShipping) {
+      onShippingSelect(selectedShipping);
     }
+  }, [selectedShipping]);
 
-    setIsCalculatingPrices(true);
-    const calculatedOptions = shippingOptions.filter(
-      sm => sm.price_type === 'calculated',
-    );
+  const formattedShippingOptions = region?.shipping_options.map(option => {
+    return {
+      ...option,
+      formattedAmount: formatPrice({
+        amount: option.amount,
+        currencyCode: region?.currency_code,
+      }),
+    };
+  });
 
-    if (calculatedOptions.length) {
-      Promise.all(
-        calculatedOptions.map(option =>
-          apiClient.store.fulfillment
-            .calculate(option.id, {
-              cart_id: cart.id,
-            })
-            .then(({shipping_option}) => ({
-              id: shipping_option.id,
-              amount: shipping_option.amount,
-            })),
-        ),
-      )
-        .then(results => {
-          const pricesMap: Record<string, number> = {};
-          results.forEach(result => {
-            if (result.id && result.amount) {
-              pricesMap[result.id] = result.amount;
-            }
-          });
-          setCalculatedPricesMap(pricesMap);
-        })
-        .catch((err: Error) => {
-          console.error('Failed to calculate shipping prices:', err);
-        })
-        .finally(() => {
-          setIsCalculatingPrices(false);
-        });
-    } else {
-      setIsCalculatingPrices(false);
-    }
-  }, [cart?.id, shippingOptions]);
-
-  const handleShippingMethodSelect = async (id: string) => {
-    if (!cart?.id) {
-      return;
-    }
-
-    // Skip if this option is already selected
-    if (selectedMethodId === id) {
-      return;
-    }
-
-    setError(null);
-    setUpdatingOptionId(id);
-
-    try {
-      await setShippingMethod(id);
-      setSelectedMethodId(id);
-    } catch (err) {
-      setError('Failed to update shipping method');
-      console.error(err);
-    } finally {
-      setUpdatingOptionId(null);
-    }
-  };
-
-  if (isLoadingShippingOptions || !shippingOptions?.length) {
+  if (!formattedShippingOptions?.length) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-gray-500">Loading shipping options...</Text>
+      <View>
+        <Text className="mb-4">No shipping options available.</Text>
+      </View>
+    );
+  }
+
+  if (!shippingAddress?.country_code) {
+    return (
+      <View>
+        <Text className="mb-4">Please select a shipping address</Text>
       </View>
     );
   }
 
   return (
-    <View className="space-y-6">
-      <Text className="text-2xl mb-4">Select Shipping Method</Text>
-      {error && (
-        <Text className="text-red-500 mb-4" testID="shipping-error">
-          {error}
-        </Text>
-      )}
-      <View className="gap-4">
-        {shippingOptions.map(option => {
-          const isCalculated = option.price_type === 'calculated';
-          const amount = isCalculated
-            ? calculatedPricesMap[option.id]
-            : option.amount;
-          const isUpdating = updatingOptionId === option.id;
-
-          return (
-            <TouchableOpacity
-              key={option.id}
-              onPress={() => handleShippingMethodSelect(option.id)}
-              disabled={isUpdating || (isCalculated && isCalculatingPrices)}
-              className={`p-4 border rounded-lg flex-row justify-between items-center ${
-                selectedMethodId === option.id
-                  ? 'border-primary'
-                  : 'border-gray-200'
-              }`}>
-              <View className="flex-row items-center flex-1">
-                <View
-                  className={`h-6 w-6 rounded-full border-2 items-center justify-center ${
-                    selectedMethodId === option.id
-                      ? 'border-primary'
-                      : 'border-gray-300'
-                  }`}>
-                  {selectedMethodId === option.id ? (
-                    <View className="h-3 w-3 rounded-full bg-primary" />
-                  ) : null}
-                </View>
-                <Text className="ml-2 flex-1">{option.name}</Text>
-              </View>
-              {isUpdating ? (
-                <ActivityIndicator size="small" color={colors.primary} />
-              ) : (
-                <Text>
-                  {isCalculated && isCalculatingPrices
-                    ? 'Calculating...'
-                    : amount !== undefined
-                    ? convertToLocale({
-                        amount,
-                        currency_code: cart.currency_code,
-                      })
-                    : '-'}
-                </Text>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+    <View className="space-y-4">
+      {formattedShippingOptions?.map(option => (
+        <TouchableOpacity
+          key={option.id}
+          onPress={() => {
+            setSelectedShipping(option);
+          }}
+          className={`p-4 border ${
+            option.id === selectedShipping?.id
+              ? 'border-indigo-600'
+              : 'border-gray-200'
+          } rounded-lg`}>
+          <View className="flex-row justify-between items-center">
+            <Text className="font-bold">{option.name}</Text>
+            <Text className="text-gray-600">{option.formattedAmount}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };

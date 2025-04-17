@@ -1,18 +1,15 @@
 import {formatImageUrl} from '@utils/image-url';
 import {cssInterop} from 'nativewind';
 import React from 'react';
-import {Dimensions, Image, View} from 'react-native';
+import {Dimensions, Image, View, TouchableWithoutFeedback} from 'react-native';
 import {useSharedValue} from 'react-native-reanimated';
-import Carousel, {
-  ICarouselInstance,
-  Pagination,
-} from 'react-native-reanimated-carousel';
+import Carousel, {ICarouselInstance, Pagination} from 'react-native-reanimated-carousel';
 import {useQuery} from '@tanstack/react-query';
 import {useNavigation} from '@react-navigation/native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 
 const width = Dimensions.get('window').width;
 
+// type for carousel items
 type HeroCarouselItem = {
   type: 'product' | 'category' | 'collection';
   entityId: string;
@@ -41,6 +38,7 @@ const HeroCarousel = () => {
     },
   });
 
+  //return null if there is no data
   if (!data || data.length === 0) {
     return null;
   }
@@ -52,6 +50,7 @@ const HeroCarousel = () => {
     });
   };
 
+  //navigate to the correct screen
   const onPressItem = (index: number) => {
     if (!enableNavigation) {
       return;

@@ -1,8 +1,7 @@
-import {useColorScheme} from 'nativewind';
-import React, {createContext, PropsWithChildren} from 'react';
-import {themes, themeColorSets, ThemeName} from '@styles/themes';
-import {View} from 'react-native';
-import {Colors} from '@styles/types';
+import { useColorScheme } from 'nativewind';
+import React, { createContext, PropsWithChildren, useState } from 'react';
+import { themes, themeColorSets, ThemeName } from '@styles/themes';
+import { View } from 'react-native';
 
 interface ThemeContext {
   name: ThemeName;
@@ -29,8 +28,8 @@ function ThemeProvider({
   children,
 }: PropsWithChildren<ThemeProviderProps>) {
   const [themeName, setThemeName] = React.useState<ThemeName>(name);
-  const {colorScheme = 'light'} = useColorScheme();
-  const themeStyles = themes[themeName][colorScheme];
+  const { colorScheme = 'light' } = useColorScheme();
+    const themeStyles = themes[themeName][colorScheme];
   const colors = themeColorSets[themeName][colorScheme];
   return (
     <ThemeContext.Provider

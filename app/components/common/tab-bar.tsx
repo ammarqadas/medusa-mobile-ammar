@@ -1,10 +1,9 @@
-import React from 'react';
 import {TouchableNativeFeedback, View} from 'react-native';
 import Text from './text';
 import {useColors} from '@styles/hooks';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import Icon from '@react-native-vector-icons/ant-design';
-
+import React from "react";
 type icon = 'home' | 'appstore' | 'profile' | 'bars';
 
 function TabBar({state, descriptors, navigation}: BottomTabBarProps) {

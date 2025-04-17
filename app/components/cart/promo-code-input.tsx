@@ -1,20 +1,14 @@
 import React, {useState} from 'react';
 import {View, TouchableOpacity, Keyboard} from 'react-native';
 import {useCart} from '@data/cart-context';
-import Input from '@components/common/input';
-import RoundedButton from '@components/common/rounded-button';
-import Text from '@components/common/text';
-import Icon from '@react-native-vector-icons/ant-design';
+import {Input, RoundedButton, Text, Button, Badge, Accordion} from '@components';
 import {useColors} from '@styles/hooks';
 import {HttpTypes} from '@medusajs/types';
-import Badge from '@components/common/badge';
 import {convertToLocale} from '@utils/product-price';
-import Button from '@components/common/button';
-import Accordion from '@components/common/accordion';
 import {useSharedValue} from 'react-native-reanimated';
+import Icon from '@expo/vector-icons/AntDesign';
 
 type Promotion = HttpTypes.StorePromotion;
-
 const PromoCodeInput = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);

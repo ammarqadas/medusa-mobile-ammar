@@ -1,19 +1,18 @@
 import Button from '@components/common/button';
 import Text from '@components/common/text';
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import Icon from '@react-native-vector-icons/ant-design';
-import {View} from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  withSpring,
-  withSequence,
+  withSequence, withSpring
 } from 'react-native-reanimated';
-import {useColors} from '@styles/hooks';
-import {useCart} from '@data/cart-context';
-import {useProductQuantity} from '@data/hooks';
-import {useNavigation} from '@react-navigation/native';
+import { useColors } from '@styles/hooks';
+import { useCart } from '@data/cart-context';
+import { useProductQuantity } from '@data/hooks';
+import { useNavigation } from '@react-navigation/native';
 import Badge from '@components/common/badge';
 
 type AnimatedCartButtonProps = {
@@ -86,7 +85,7 @@ const AnimatedCartButton = ({
   );
 };
 
-const ViewCart = ({quantity}: {quantity: number}) => {
+const ViewCart = ({ quantity }: { quantity: number }) => {
   const colors = useColors();
   const navigation = useNavigation();
   const scale = useSharedValue(1);
@@ -96,8 +95,8 @@ const ViewCart = ({quantity}: {quantity: number}) => {
     // Only animate when quantity increases
     if (prevQuantity.current && quantity > prevQuantity.current) {
       scale.value = withSequence(
-        withSpring(1.3, {damping: 8}),
-        withSpring(1, {damping: 8}),
+        withSpring(1.3, { damping: 8 }),
+        withSpring(1, { damping: 8 }),
       );
     }
     prevQuantity.current = quantity;
@@ -117,7 +116,7 @@ const ViewCart = ({quantity}: {quantity: number}) => {
     <Button
       variant="secondary"
       disabled={quantity === 0}
-      onPress={navigateToCart}>
+      onPress={navigateToCart} >
       <View>
         <View className="flex-row gap-1 items-center">
           <View>
@@ -128,9 +127,9 @@ const ViewCart = ({quantity}: {quantity: number}) => {
               <Badge quantity={quantity} />
             </Animated.View>
           </View>
-          <Text
+          <Text  
             className="ml-2 text-content font-content-bold"
-            numberOfLines={1}>
+            numberOfLines={1} >
             View cart
           </Text>
         </View>

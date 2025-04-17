@@ -1,17 +1,10 @@
 import React from 'react';
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import {View, Image, TouchableOpacity, Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useQuery} from '@tanstack/react-query';
 import Text from '@components/common/text';
 import {formatImageUrl} from '@utils/image-url';
-import {HttpTypes} from '@medusajs/types';
+import {type HttpTypes} from '@medusajs/types';
 import apiClient from '@api/client';
 import {useRegion} from '@data/region-context';
 import PreviewPrice from '@components/product/preview-price';
@@ -29,7 +22,7 @@ type FeaturedCollectionProps = {
   queryKey?: string[];
 };
 
-const FeaturedCollection = ({
+const FeaturedCollection: React.FC<FeaturedCollectionProps> = ({
   limit = 10,
   name = 'Top Selling',
   showCta = true,

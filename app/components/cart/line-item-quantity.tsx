@@ -1,6 +1,6 @@
 import React from 'react';
 import {useColors} from '@styles/hooks';
-import {ActivityIndicator, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import Icon from '@react-native-vector-icons/ant-design';
 import Text from '@components/common/text';
 import {useCart} from '@data/cart-context';
@@ -46,17 +46,16 @@ const LineItemQuantity = ({
     <View className="flex-row items-center gap-4">
       {mode === 'cart' ? (
         <View className="flex flex-row gap-2 bg-background border-hairline border-primary rounded-lg self-start p-1 items-center">
-          <TouchableOpacity
+          <Icon.Button
             onPress={decrement}
-            className="justify-center items-center px-1 py-1">
-            <Icon name="minus" size={12} color={colors.primary} />
-          </TouchableOpacity>
+            name="minus"
+            size={12}
+            color={colors.primary}
+            backgroundColor="transparent" />
           <Text className="text-base">{quantity}</Text>
-          <TouchableOpacity
+          <Icon.Button
             onPress={increment}
-            className="justify-center items-center px-1 py-1">
-            <Icon name="plus" size={12} color={colors.primary} />
-          </TouchableOpacity>
+            name="plus" size={12} color={colors.primary} backgroundColor="transparent"/>
         </View>
       ) : (
         <Text className="text-base">Qty: {quantity}</Text>
@@ -64,9 +63,11 @@ const LineItemQuantity = ({
       {updating ? (
         <ActivityIndicator size="small" color={colors.primary} />
       ) : mode === 'cart' ? (
-        <TouchableOpacity onPress={deleteLineItem} className="opacity-75">
-          <Icon name="delete" size={16} color={colors.content} />
-        </TouchableOpacity>
+        <Icon.Button
+        onPress={deleteLineItem}
+        name="delete" size={16} color={colors.content}
+        backgroundColor="transparent"
+        />
       ) : null}
     </View>
   );

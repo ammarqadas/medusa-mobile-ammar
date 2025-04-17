@@ -1,13 +1,11 @@
-import {StoreCart} from '@medusajs/types';
 import React from 'react';
 import {Image, View} from 'react-native';
 import Text from '@components/common/text';
 import {HttpTypes} from '@medusajs/types';
 import LineItemQuantity from '@components/cart/line-item-quantity';
 import LineItemUnitPrice from '@components/cart/line-item-price';
-import {convertToLocale} from '@utils/product-price';
+import {convertToLocale, StoreCart} from '@utils/product-price';
 import {formatImageUrl} from '@utils/image-url';
-import PromoCodeInput from '@components/cart/promo-code-input';
 
 type CartContentProps = {
   cart: HttpTypes.StoreCart;
@@ -20,7 +18,7 @@ const CartContent = ({cart, mode}: CartContentProps) => {
       <View className="mb-4">
         <CartItems cart={cart} mode={mode} />
       </View>
-      {mode === 'cart' && <PromoCodeInput />}
+
 
       <CartSummary cart={cart} />
     </View>

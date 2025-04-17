@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {TextInput, TextInputProps, View} from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, TextInputProps, View } from 'react-native';
 import Text from './text';
 
 type InputProps = TextInputProps & {
@@ -27,17 +27,17 @@ const Input = React.forwardRef<TextInput, InputProps>(
     const [isFocused, setIsFocused] = useState(false);
 
     return (
-      <View className={`mb-4 ${containerClassName}`}>
+      <View className={`mb-4 ${containerClassName}`} >
         {label && (
           <Text className="text-base mb-2">
             {label}
-            {required && '*'}
+            {required && '*'}    
           </Text>
         )}
         <TextInput
           ref={ref}
           className={`border rounded-lg p-4 text-base text-content ${
-            error
+              error
               ? 'border-red-500'
               : isFocused
               ? 'border-primary'
@@ -47,13 +47,13 @@ const Input = React.forwardRef<TextInput, InputProps>(
             onChangeText?.(text);
           }}
           onFocus={e => {
-            setIsFocused(true);
+              setIsFocused(true);
             onFocus?.(e);
           }}
           onBlur={e => {
-            setIsFocused(false);
+              setIsFocused(false);
             onBlur?.(e);
-          }}
+          }} 
           {...props}
         />
         {error ? <Text className="text-red-500 mt-2">{error}</Text> : null}

@@ -1,174 +1,90 @@
-import React from 'react';
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
-import {useInfiniteQuery} from '@tanstack/react-query';
+import React from "react";
+import { View, Image, Dimensions } from "react-native";
 import {useNavigation} from '@react-navigation/native';
-import {HttpTypes} from '@medusajs/types';
+import Carousel, { Pagination } from "react-native-snap-carousel";
+
 import {useColors} from '@styles/hooks';
-import Text from '@components/common/text';
-import Loader from '@components/common/loader';
-import ErrorUI from '@components/common/error-ui';
-import {getProductPrice} from '@utils/product-price';
 import {formatImageUrl} from '@utils/image-url';
-import PreviewPrice from '@components/product/preview-price';
+import Text from "@components/common/text";
 import apiClient from '@api/client';
-import {useRegion} from '@data/region-context';
-import WishlistButton from './wishlist-button';
 
-const LIMIT = 10;
+const { width: screenWidth } = Dimensions.get("window");
 
-type ProductListRes = {
-  products: HttpTypes.StoreProduct[];
-  count: number;
-  offset: number;
-  limit: number;
+type HeroCarouselItem = {
+  id: string;
+  title: string;
+  image: string;
+  collection_id: string;
 };
 
-type ProductsListProps = {
-  queryKey?: string[];
-  additionalParams?: Partial<HttpTypes.StoreProductListParams>;
-  headerComponent?: React.ReactElement;
-  name?: string;
-  hideTitle?: boolean;
-};
-
-const ProductsList = ({
-  queryKey,
-  additionalParams = {},
-  headerComponent,
-  name = 'Latest Products',
-  hideTitle = false,
-}: ProductsListProps) => {
+const HeroCarousel = () => {
   const colors = useColors();
-  const {region} = useRegion();
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    error,
-    refetch,
-    isRefetching,
-  } = useInfiniteQuery({
-    queryKey: queryKey ?? ['products', region?.id],
-    initialPageParam: 0,
-    queryFn: async ({pageParam}) => {
-      const params: HttpTypes.StoreProductListParams = {
-        limit: LIMIT,
-        offset: pageParam,
-        fields: '*variants.calculated_price',
-        region_id: region?.id,
-        order: '-created_at',
-        ...additionalParams,
-      };
-      return apiClient.store.product.list(params);
-    },
-    getNextPageParam: (lastPage: ProductListRes, pages) => {
-      if (lastPage.products.length < LIMIT) {
-        return undefined;
-      }
-      return pages.length * LIMIT;
-    },
-  });
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <ErrorUI />;
-  }
-
-  const products = data?.pages.flatMap(page => page.products) ?? [];
-
-  const loadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  };
-
-  const renderFooter = () => {
-    if (!isFetchingNextPage) {
-      return null;
-    }
-    return (
-      <View className="py-4">
-        <ActivityIndicator size="small" color={colors.primary} />
-      </View>
-    );
-  };
-
-  const renderHeader = () => {
-    return (
-      <View>
-        {headerComponent}
-        {!hideTitle && <Text className="text-lg font-content-bold">{name}</Text>}
-      </View>
-    );
-  };
-
-  return (
-    <FlatList
-      contentContainerClassName="gap-4 px-5 pb-10"
-      columnWrapperClassName="gap-4"
-      data={products}
-      numColumns={2}
-      ListHeaderComponent={renderHeader}
-      renderItem={({item}) => <ProductItem product={item} />}
-      keyExtractor={item => item.id ?? ''}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.3}
-      ListFooterComponent={renderFooter}
-      refreshing={isRefetching}
-      refreshControl={
-        <RefreshControl
-          colors={[colors.primary]}
-          refreshing={isRefetching}
-          onRefresh={refetch}
-        />
-      }
-      onRefresh={refetch}
-    />
-  );
-};
-
-const ProductItem = ({product}: {product: HttpTypes.StoreProduct}) => {
-  const {cheapestPrice} = getProductPrice({
-    product,
-  });
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const navigation = useNavigation();
-  const navigateToProduct = () => {
-    navigation.navigate('ProductDetail', {productId: product.id});
+
+  const [carouselItems, setCarouselItems] = React.useState<
+    HeroCarouselItem[]
+  >([]);
+
+  React.useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const fetchCollections = async () => {
+    const res = await apiClient.store.collection.list({});
+    setCarouselItems(
+      res.collections.map((col) => ({
+        id: col.id,
+        title: col.title,
+        image: col.thumbnail,
+        collection_id: col.id,
+      }))
+    );
   };
-  return (
-    <TouchableOpacity
-      onPress={navigateToProduct}
-      className="flex-1 max-w-[50%]">
-      <View>
-        <View>
+
+  const renderItem = ({ item }: { item: HeroCarouselItem }) => {
+    return (
+      <View className="w-full items-center">
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("CollectionDetail", {
+              collectionId: item.collection_id,
+            });
+          }}
+          className="w-full"
+        >
           <Image
-            source={{uri: formatImageUrl(product.thumbnail)}}
-            className="w-full h-48 rounded-2xl"
+            source={{ uri: formatImageUrl(item.image) }}
+            className="w-full h-56 rounded-3xl"
             resizeMode="cover"
           />
-          <View className="absolute bottom-2 right-2">
-            <WishlistButton product={product} />
+          <View className="absolute bottom-4 left-4">
+            <Text className="text-white font-content-bold text-lg">
+              {item.title}
+            </Text>
           </View>
-        </View>
-        <Text className="text-base leading-5 font-content-bold mt-1 mb-2">
-          {product.title}
-        </Text>
-        {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View className="pb-10">
+      <Carousel
+        layout={"default"}
+        data={carouselItems}
+        sliderWidth={screenWidth}
+        itemWidth={screenWidth * 0.9}
+        renderItem={renderItem}
+        onSnapToItem={(index) => setActiveIndex(index)}
+      />
+      <Pagination
+        dotsLength={carouselItems.length}
+        activeDotIndex={activeIndex}
+        dotStyle={{ backgroundColor: colors.primary, width: 20 }}
+      />
+    </View>
   );
 };
 
-export default ProductsList;
+export default HeroCarousel;

@@ -1,8 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import RoundedButton from '@components/common/rounded-button';
-import Icon from '@react-native-vector-icons/ant-design';
-import {useNavigation} from '@react-navigation/native';
+import {AntDesign} from '@expo/vector-icons';
 import Text from '@components/common/text';
 
 type NavbarProps = {
@@ -10,17 +9,14 @@ type NavbarProps = {
   showBackButton?: boolean;
 };
 
-const Navbar = ({title, showBackButton = true}: NavbarProps) => {
-  const navigation = useNavigation();
-  const goBack = () => {
-    navigation.goBack();
-  };
+const Navbar = ({title, showBackButton = true, goBack}: NavbarProps & {goBack?: ()=> void}) => {
+
   return (
     <View className="p-4 h-14 flex-row justify-between items-center">
       <View className="flex-1">
         {showBackButton ? (
-          <RoundedButton onPress={goBack}>
-            <Icon name="left" size={14} />
+          <RoundedButton onPress={goBack ? goBack : () => {}}>
+            <AntDesign name="left" size={14} />
           </RoundedButton>
         ) : (
           <View />

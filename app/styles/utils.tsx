@@ -1,5 +1,4 @@
 import {Themes, ThemeColorSets, Colors} from './types';
-import {vars} from 'nativewind';
 
 export const applyThemes = (themeColorSets: ThemeColorSets): Themes => {
   const themes: Themes = {};
@@ -14,7 +13,6 @@ export const applyThemes = (themeColorSets: ThemeColorSets): Themes => {
 };
 
 const getVars = (colors: Colors) => {
-  return vars(
     Object.entries(colors).reduce(
       (acc: Record<string, string>, [key, value]) => {
         // convert key from camelcase to kebab-case
@@ -26,5 +24,4 @@ const getVars = (colors: Colors) => {
       },
       {},
     ),
-  );
 };

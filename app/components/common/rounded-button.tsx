@@ -1,5 +1,5 @@
-import React, {PropsWithChildren} from 'react';
-import {TouchableOpacity} from 'react-native';
+import React from 'react';
+import {TouchableOpacity, View} from 'react-native';
 import {tv} from 'tailwind-variants';
 
 const button = tv({
@@ -22,17 +22,17 @@ type RoundedButtonProps = {
   className?: string;
 };
 
-const RoundedButton = ({
-  children,
-  onPress,
-  size,
-  className,
-}: PropsWithChildren<RoundedButtonProps>) => {
+const RoundedButton = ({onPress, size, className,}: RoundedButtonProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={button({size, className})}>
-      {children}
+      className={button({size, className})}
+      activeOpacity={0.7}
+      >
+        <View>
+
+        </View>
+
     </TouchableOpacity>
   );
 };

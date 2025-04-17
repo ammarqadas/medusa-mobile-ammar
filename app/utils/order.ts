@@ -1,5 +1,4 @@
 export type FulfillmentStatus =
-  | 'canceled'
   | 'not_fulfilled'
   | 'partially_fulfilled'
   | 'fulfilled'
@@ -10,7 +9,6 @@ export type FulfillmentStatus =
 
 export const getFulfillmentStatus = (status: FulfillmentStatus) => {
   const statusMap: Record<FulfillmentStatus, string> = {
-    canceled: 'Canceled',
     not_fulfilled: 'Not Fulfilled',
     partially_fulfilled: 'Partially Fulfilled',
     fulfilled: 'Fulfilled',

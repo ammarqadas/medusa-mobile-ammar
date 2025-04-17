@@ -1,8 +1,7 @@
 import React from 'react';
 import MaterialIcon from '@react-native-vector-icons/material-design-icons';
 import {TouchableOpacity} from 'react-native';
-import {useColors} from '@styles/hooks';
-import {StoreProduct} from '@medusajs/types';
+import {useColors} from '@app/styles/hooks';
 
 type WishlistButtonProps = {
   product: StoreProduct;

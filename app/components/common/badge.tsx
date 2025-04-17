@@ -1,6 +1,5 @@
-import React from 'react';
 import {View} from 'react-native';
-import Text from '@components/common/text';
+import Text from './text';
 import {tv, type VariantProps} from 'tailwind-variants';
 
 const badge = tv({

@@ -1,98 +1,46 @@
-import React from 'react';
-import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {useState, useRef, ReactNode} from 'react';
+import {View, TouchableOpacity, Animated} from 'react-native';
+import {ChevronDown} from 'lucide-react-native';
+
 import Text from './text';
-import {tv, type VariantProps} from 'tailwind-variants';
-import {useColors} from '@styles/hooks';
+import {tv} from 'tailwind-variants';
 
-const button = tv({
-  base: 'justify-center items-center rounded-xl h-14',
-  variants: {
-    variant: {
-      primary: 'bg-primary',
-      secondary: 'bg-background border border-gray-300',
-    },
-    disabled: {
-      true: 'bg-gray-300',
-      false: '',
-    },
-  },
-  defaultVariants: {
-    variant: 'primary',
-    disabled: false,
-  },
+const accordion = tv({
+  base: 'overflow-hidden border border-gray-200 rounded-xl',
 });
 
-const buttonText = tv({
-  base: 'text-base font-content-bold block mx-4',
-  variants: {
-    disabled: {
-      true: 'text-gray-400',
-
-      false: '',
-    },
-    variant: {
-      primary: 'text-content-secondary',
-      secondary: 'text-content',
-    },
-  },
-  defaultVariants: {
-    variant: 'primary',
-    disabled: false,
-  },
+const accordionHeader = tv({
+  base: 'flex-row items-center justify-between px-4 py-3',
 });
 
-type BaseProps = VariantProps<typeof button> & {
-  className?: string;
-  onPress?: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-};
-
-type WithTitle = BaseProps & {
+type Props = {
   title: string;
-  children?: never;
+  children: ReactNode;
 };
 
-type WithChildren = BaseProps & {
-  title?: never;
-  children: React.ReactNode;
-};
-
-type Props = WithTitle | WithChildren;
-
-const CommonButton = ({
-  title,
-  onPress,
-  loading,
-  disabled,
-  variant,
-  children,
-}: Props) => {
-  const colors = useColors();
-  const renderContent = () => {
-    if (loading) {
-      const color =
-        variant === 'secondary' ? colors.content : colors.contentSecondary;
-      return <ActivityIndicator size="small" color={color} />;
-    }
-
-    if (children) {
-      return children;
-    }
-    return (
-      <Text className={buttonText({disabled, variant})} numberOfLines={1}>
-        {title}
-      </Text>
-    );
+const Accordion = ({title, children}: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const animationController = useRef(new Animated.Value(0)).current;
+  const toggleAnimation = () => {
+    const config = {
+      duration: 300,
+      toValue: isOpen ? 0 : 1,
+      useNativeDriver: true,
+    };
+    Animated.timing(animationController, config).start();
+    setIsOpen(!isOpen);
   };
   return (
     <TouchableOpacity
-      onPress={loading ? () => {} : onPress}
-      disabled={disabled || loading}
-      className={button({disabled, variant})}>
-      {renderContent()}
+      onPress={toggleAnimation}
+      className={accordion()}>
+      <View className={accordionHeader()}>
+        <Text className="font-content-bold">{title}</Text>
+        <ChevronDown size={24} className="self-center" />
+      </View>
+      {children}
     </TouchableOpacity>
   );
 };
 
-export default CommonButton;
+export default Accordion;

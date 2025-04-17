@@ -1,23 +1,17 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import Text from '@components/common/text';
-import {useCartQuantity, useLoggedIn} from '@data/hooks';
+import {useCartQuantity} from '@data/hooks';
 import Icon from '@react-native-vector-icons/ant-design';
 import MaterialIcon from '@react-native-vector-icons/material-design-icons';
 import {TabActions, useNavigation} from '@react-navigation/native';
 import {useColors} from '@styles/hooks';
 import Badge from '@components/common/badge';
 import {useQuery} from '@tanstack/react-query';
-import apiClient from '@api/client';
 import RoundedButton from '@components/common/rounded-button';
+import {useCustomer} from '../../data/hooks';
 
 const Header = () => {
-  const {data} = useQuery({
-    queryKey: ['regions'],
-    queryFn: () => apiClient.store.region.list(),
-  });
-
-  const showRegionSelector = data?.regions && data.regions.length > 1;
 
   return (
     <View className="px-5 flex-row h-14 justify-between items-center">
@@ -46,14 +40,14 @@ const RegionSelectorButton = () => {
 
 const ProfileButton = () => {
   const colors = useColors();
+  const {customer, isAuthenticated} = useCustomer();
   const navigation = useNavigation();
-  const loggedIn = useLoggedIn();
   return (
     <RoundedButton
       onPress={() => {
-        if (loggedIn) {
+        if (isAuthenticated) {
           navigation.dispatch(TabActions.jumpTo('Profile'));
-        } else {
+        } else if(!customer?.id){
           navigation.navigate('SignIn');
         }
       }}>

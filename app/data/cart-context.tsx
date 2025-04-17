@@ -1,12 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
+import React, {createContext, useContext, useEffect, useState, useCallback} from 'react';
 import {HttpTypes} from '@medusajs/types';
-import {useRegion} from './region-context';
+import {useRegion} from '@data/region-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '@api/client';
 
@@ -20,6 +14,7 @@ type AddressFields = {
   postal_code: string;
   city: string;
   country_code: string;
+
   province?: string;
   phone: string;
 };
@@ -31,11 +26,9 @@ type CartUpdateData = Partial<{
   region_id: string;
 }>;
 
+
 type CartContextType = {
-  cart?: HttpTypes.StoreCart;
-  setCart: React.Dispatch<
-    React.SetStateAction<HttpTypes.StoreCart | undefined>
-  >;
+  cart?: HttpTypes.StoreCart;  setCart: React.Dispatch<React.SetStateAction<HttpTypes.StoreCart | undefined>>;
   resetCart: () => Promise<void>;
   addToCart: (variantId: string, quantity: number) => Promise<void>;
   updateLineItem: (lineItemId: string, quantity: number) => Promise<void>;
@@ -55,6 +48,7 @@ type CartProviderProps = {
 export const CartProvider = ({children}: CartProviderProps) => {
   const [cart, setCart] = useState<HttpTypes.StoreCart>();
   const {region} = useRegion();
+
 
   const additionalFields = '+shipping_methods.name';
 
@@ -119,6 +113,7 @@ export const CartProvider = ({children}: CartProviderProps) => {
           .create({region_id: region.id})
           .then(async ({cart: dataCart}) => {
             await AsyncStorage.setItem(CART_KEY, dataCart.id);
+
             setCart(dataCart);
           })
           .catch(err => {
@@ -129,7 +124,7 @@ export const CartProvider = ({children}: CartProviderProps) => {
         fetchCart(cartId);
       }
     });
-  }, [cart, region, updateCartRegion]);
+  }, [cart, region, updateCartRegion, setCart]);
 
   const fetchCart = async (cartId: string) => {
     return apiClient.store.cart
@@ -168,7 +163,7 @@ export const CartProvider = ({children}: CartProviderProps) => {
     try {
       if (quantity === 0) {
         await apiClient.store.cart.deleteLineItem(cart.id, lineItemId);
-        await fetchCart(cart.id);
+        await fetchCart(cart.id)
       } else {
         const {cart: dataCart} = await apiClient.store.cart.updateLineItem(
           cart.id,
@@ -185,9 +180,7 @@ export const CartProvider = ({children}: CartProviderProps) => {
   };
 
   const linkCartToCustomer = async () => {
-    const {cart: dataCart} = await apiClient.store.cart.transferCart(
-      cart?.id || '',
-    );
+    const {cart: dataCart} = await apiClient.store.cart.transferCart(cart?.id || '');
     setCart(dataCart);
   };
 
@@ -224,10 +217,12 @@ export const CartProvider = ({children}: CartProviderProps) => {
       const updatedCartPromoCodes = updatedCart.promotions
         ?.filter(p => p.code)
         .map(p => p.code);
+
       if (updatedCartPromoCodes?.includes(code)) {
         return true;
       }
       return false;
+
     } catch (err) {
       return false;
     }

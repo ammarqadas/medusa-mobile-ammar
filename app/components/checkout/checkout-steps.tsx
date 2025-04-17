@@ -1,9 +1,8 @@
 import React from 'react';
 import {View, TouchableOpacity} from 'react-native';
 import Text from '@components/common/text';
-import AntDesign from '@react-native-vector-icons/ant-design';
 import {useColors} from '@styles/hooks';
-import {CheckoutStep, CHECKOUT_STEPS} from '../../types/checkout';
+import {CheckoutStep, CHECKOUT_STEPS} from '@app/types/checkout';
 
 type CheckoutStepsProps = {
   currentStep: CheckoutStep;
@@ -48,13 +47,13 @@ const CheckoutSteps = ({currentStep, onStepPress}: CheckoutStepsProps) => {
                 className={`w-8 h-8 rounded-full items-center justify-center ${
                   getStepBackground(isActive, isPast)
                 }`}>
-                <AntDesign
-                  name={step.icon}
-                  size={16}
-                  color={
-                    isActive || isPast ? colors.contentSecondary : colors.content
-                  }
-                />
+                {step.icon && (
+                  <step.icon
+                    size={16}
+                    color={
+                      isActive || isPast ? colors.contentSecondary : colors.content
+                    } />
+                )}
               </View>
               <Text
                 className={`text-xs mt-1 ${

@@ -1,20 +1,16 @@
-import React, {PropsWithChildren} from 'react';
-import {View} from 'react-native';
+import { PropsWithChildren } from 'react';
+import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   SharedValue,
   withTiming,
   useSharedValue,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
-type AccordionProps = PropsWithChildren<{
-  isExpanded: SharedValue<boolean>;
-  duration?: number;
-  className?: string;
-}>;
+type AccordionProps = PropsWithChildren<{ isExpanded: SharedValue<boolean>; duration?: number; className?: string }>
 
-const Accordion = ({
+const Accordion = ({ 
   isExpanded,
   children,
   duration = 300,
@@ -23,13 +19,11 @@ const Accordion = ({
   const height = useSharedValue(0);
 
   const derivedHeight = useDerivedValue(() =>
-    withTiming(height.value * Number(isExpanded.value), {
-      duration,
-    }),
+    withTiming(height.value * Number(isExpanded.value), { duration }),
   );
 
   const bodyStyle = useAnimatedStyle(() => ({
-    height: derivedHeight.value,
+    height: derivedHeight.value
   }));
 
   return (
@@ -45,6 +39,6 @@ const Accordion = ({
       </View>
     </Animated.View>
   );
-};
+}; 
 
 export default Accordion;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, TouchableOpacity, ScrollView} from 'react-native';
-import Text from '@components/common/text';
+import {View, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
+import Text from '../common/text';
 import {HttpTypes} from '@medusajs/types';
 import {tv} from 'tailwind-variants';
 
@@ -44,7 +44,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   return (
     <View className="flex flex-col gap-y-3">
       <Text className="text-base">Select {title}</Text>
-      <ScrollView horizontal={false} className="flex flex-row flex-wrap">
+      <ScrollView horizontal={false} contentContainerStyle={styles.scrollViewContent}>
         <View className="flex flex-row flex-wrap gap-4">
           {filteredOptions.map(v => {
             return (
@@ -70,5 +70,11 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+});
 
 export default OptionSelect;

@@ -1,12 +1,13 @@
-import {apiUrl} from '@api/client';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 export const formatImageUrl = (url?: string | undefined | null) => {
   if (!url) {
     return '';
   }
-  // if url has localhost:9000, replace with the actual backend url
-  if (url.includes('http://localhost:9000')) {
-    return url.replace('http://localhost:9000', apiUrl);
+
+  if (url.includes('localhost')) {
+    return url.replace('localhost', Platform.OS === 'ios' ? 'localhost' : Constants?.expoConfig?.hostUri?.split(':').shift() || 'localhost');
   }
   return url;
 };

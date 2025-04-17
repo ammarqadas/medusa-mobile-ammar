@@ -1,10 +1,8 @@
 import {useCart} from './cart-context';
 import {useRegion} from './region-context';
 import {CheckoutStep} from '../types/checkout';
-import {useCustomer} from './customer-context';
 
-
-export const useProductQuantity = (productId: string) => {
+export const useProductQuantity = (productId: string): number => {
   const {cart} = useCart();
 
   const quantity = cart?.items?.reduce((acc, item) => {
@@ -17,7 +15,7 @@ export const useProductQuantity = (productId: string) => {
   return quantity || 0;
 };
 
-export const useVariantQuantity = (variantId: string) => {
+export const useVariantQuantity = (variantId: string): number => {
   const {cart} = useCart();
 
   const quantity = cart?.items?.reduce((acc, item) => {
@@ -30,7 +28,7 @@ export const useVariantQuantity = (variantId: string) => {
   return quantity || 0;
 };
 
-export const useCartQuantity = () => {
+export const useCartQuantity = (): number => {
   const {cart} = useCart();
 
   const quantity = cart?.items?.reduce((acc, item) => {
@@ -83,7 +81,6 @@ export const useActivePaymentSession = () => {
   );
 };
 
-export const useLoggedIn = () => {
-  const {customer} = useCustomer();
-  return customer !== undefined;
+export const useLoggedIn = (customer: unknown) => {
+  return customer !== null && customer !== undefined;
 };
